@@ -14,6 +14,9 @@ package servicers
 import (
 	"context"
 
+	"github.com/golang/glog"
+	"google.golang.org/grpc/metadata"
+
 	"magma/orc8r/cloud/go/services/metricsd/protos"
 	"magma/orc8r/lib/go/registry"
 
@@ -27,6 +30,8 @@ const (
 	serviceName = "grpc_metrics_exporter"
 
 	grpcMaxMsgSize = 1024 * 1024 * 1024 // 1 Gb
+
+	grpcShardKeyHeader = "ORCHESTRATOR-SHARD-KEY"
 )
 
 var (
@@ -37,6 +42,9 @@ var (
 	}
 )
 
+// GRPCPushExporterServicer handles pushing metrics over GRPC to a datasink.
+// Requests are sent with a shard key header so distributors can hash this
+// request to a specific instance if necessary.
 type GRPCPushExporterServicer struct {
 	// registry is the servicer's local service registry.
 	// Local registry since the gRPC servicer is not a proper Orchestrator
@@ -57,16 +65,30 @@ func (s *GRPCPushExporterServicer) Submit(ctx context.Context, req *protos.Submi
 	if len(metricsToSend) == 0 {
 		return &protos.SubmitMetricsResponse{}, nil
 	}
-	err := s.pushFamilies(metricsToSend)
+	var shardKey string
+	switch metCtx := req.GetContext().(type) {
+	case *protos.SubmitMetricsRequest_GatewayContext:
+		shardKey = metCtx.GatewayContext.GatewayId
+	case *protos.SubmitMetricsRequest_CloudContext:
+		shardKey = metCtx.CloudContext.CloudHost
+	case *protos.SubmitMetricsRequest_PushedContext:
+		shardKey = metCtx.PushedContext.NetworkId
+	default:
+		glog.Errorf("Unknown metric context type: %T", metCtx)
+	}
+
+	err := s.pushFamilies(req.Metrics, shardKey)
 	return &protos.SubmitMetricsResponse{}, err
 }
 
-func (s *GRPCPushExporterServicer) pushFamilies(families []*io_prometheus_client.MetricFamily) error {
+func (s *GRPCPushExporterServicer) pushFamilies(families []*io_prometheus_client.MetricFamily, shardKey string) error {
 	client, err := s.getClient()
 	if err != nil {
 		return err
 	}
-	_, err = client.Collect(context.Background(), &edge_hub.MetricFamilies{Families: families})
+	md := metadata.New(map[string]string{grpcShardKeyHeader: shardKey})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
+	_, err = client.Collect(ctx, &edge_hub.MetricFamilies{Families: families})
 	if err != nil {
 		return err
 	}
