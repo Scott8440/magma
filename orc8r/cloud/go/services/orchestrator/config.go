@@ -20,7 +20,9 @@ import (
 // Config represents the configuration provided to lte service
 type Config struct {
 	UseGRPCExporter           bool                         `yaml:"useGRPCExporter"`
+	UseRemoteWriteExporter    bool                         `yaml:"useRemoteWriteExporter"`
 	PrometheusGRPCPushAddress string                       `yaml:"prometheusGRPCPushAddress"`
 	PrometheusPushAddresses   []string                     `yaml:"prometheusPushAddresses"`
+	RemoteWriteAddress        string                       `yaml:"remoteWriteAddress"`
 	Analytics                 calculations.AnalyticsConfig `yaml:"analytics"`
 }

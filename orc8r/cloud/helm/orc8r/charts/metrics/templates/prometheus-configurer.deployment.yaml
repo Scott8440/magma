@@ -56,11 +56,11 @@ spec:
         - name: thanos-objstore-config
           configMap:
             name: thanos-objstore-config
-        {{ if .Values.thanos.rule.certSecretName }}
-        - name: {{ .Values.thanos.rule.certSecretName }}
+        {{ if .Values.thanos.ruler.certSecretName }}
+        - name: {{ .Values.thanos.ruler.certSecretName }}
           secret:
             defaultMode: 420
-            secretName: {{ .Values.thanos.rule.certSecretName }}
+            secretName: {{ .Values.thanos.ruler.certSecretName }}
         {{- end }}
   {{- end }}
   {{- end }}
@@ -89,66 +89,65 @@ spec:
         - name: thanos-rule
           image: "{{ .Values.thanos.image.repository }}:{{ .Values.thanos.image.tag }}"
           imagePullPolicy: {{ .Values.thanos.image.pullPolicy }}
-          resources: {{ toYaml .Values.thanos.rule.resources | nindent 12 }}
-          {{- with .Values.thanos.rule.extraEnv }}
+          resources: {{ toYaml .Values.thanos.ruler.resources | nindent 12 }}
+          {{- with .Values.thanos.ruler.extraEnv }}
           env: {{ toYaml . | nindent 10 }}
           {{- end }}
           args:
             - "rule"
             - "--data-dir=/var/thanos/store"
-            - "--log.level={{ .Values.thanos.rule.logLevel }}"
-            - "--log.format={{ .Values.thanos.rule.logFormat }}"
-            - "--http-address=0.0.0.0:{{ .Values.thanos.rule.http.port }}"
-            - "--grpc-address=0.0.0.0:{{ .Values.thanos.rule.grpc.port }}"
+            - "--log.level={{ .Values.thanos.ruler.logLevel }}"
+            - "--http-address=0.0.0.0:{{ .Values.thanos.ruler.service.http.port }}"
+            - "--grpc-address=0.0.0.0:{{ .Values.thanos.ruler.service.grpc.port }}"
             - "--objstore.config-file=/etc/thanos/objstore.yaml"
-            - "--rule-file={{ .Values.thanos.rule.ruleFile }}"
-            {{- range $key, $val := .Values.thanos.rule.ruleLabels }}
+            - "--rule-file={{ .Values.thanos.ruler.ruleFile }}"
+            {{- range $key, $val := .Values.thanos.ruler.ruleLabels }}
             - '--label={{ $key }}={{ $val | quote }}'
             {{- end }}
-            {{- if .Values.thanos.rule.resendDelay }}
-            - "--resend-delay={{ .Values.thanos.rule.resendDelay }}"
+            {{- if .Values.thanos.ruler.resendDelay }}
+            - "--resend-delay={{ .Values.thanos.ruler.resendDelay }}"
             {{- end }}
-            {{- if .Values.thanos.rule.evalInterval }}
-            - "--eval-interval={{ .Values.thanos.rule.evalInterval }}"
+            {{- if .Values.thanos.ruler.evalInterval }}
+            - "--eval-interval={{ .Values.thanos.ruler.evalInterval }}"
             {{- end }}
-            {{- if .Values.thanos.rule.tsdbBlockDuration }}
-            - "--tsdb.block-duration={{ .Values.thanos.rule.tsdbBlockDuration }}"
+            {{- if .Values.thanos.ruler.tsdbBlockDuration }}
+            - "--tsdb.block-duration={{ .Values.thanos.ruler.tsdbBlockDuration }}"
             {{- end }}
-            {{- if .Values.thanos.rule.tsdbRetention }}
-            - "--tsdb.retention={{ .Values.thanos.rule.tsdbRetention }}"
+            {{- if .Values.thanos.ruler.tsdbRetention }}
+            - "--tsdb.retention={{ .Values.thanos.ruler.tsdbRetention }}"
             {{- end }}
-            {{- if .Values.thanos.rule.webRoutePrefix }}
-            - "--web.route-prefix={{ .Values.thanos.rule.webRoutePrefix }}"
+            {{- if .Values.thanos.ruler.webRoutePrefix }}
+            - "--web.route-prefix={{ .Values.thanos.ruler.webRoutePrefix }}"
             {{- end }}
-            {{- if .Values.thanos.rule.webExternalPrefix }}
-            - "--web.external-prefix={{ .Values.thanos.rule.webExternalPrefix }}"
+            {{- if .Values.thanos.ruler.webExternalPrefix }}
+            - "--web.external-prefix={{ .Values.thanos.ruler.webExternalPrefix }}"
             {{- end }}
-            {{- if .Values.thanos.rule.webPrefixHeader }}
-            - "--web.prefix-header={{ .Values.thanos.rule.webPrefixHeader }}"
+            {{- if .Values.thanos.ruler.webPrefixHeader }}
+            - "--web.prefix-header={{ .Values.thanos.ruler.webPrefixHeader }}"
             {{- end }}
-            {{- if .Values.thanos.rule.queryDNSDiscovery }}
-            - "--query=dnssrv+_http._tcp.orc8r-thanos-query-http.{{ .Release.Namespace }}.svc.cluster.local"
+            {{- if .Values.thanos.ruler.dnsDiscovery.enabled }}
+            - "--query=dnssrv+_http._tcp.orc8r-thanos-query.{{ .Release.Namespace }}.svc.cluster.local"
             {{- end  }}
-            {{- range .Values.thanos.rule.alertmanagers }}
+            {{- range .Values.thanos.ruler.alertmanagers }}
             - "--alertmanagers.url={{ . }}"
             {{- end  }}
-            {{- if .Values.thanos.rule.alertmanagersSendTimeout }}
-            - "--alertmanagers.send-timeout={{ .Values.thanos.rule.alertmanagersSendTimeout }}"
+            {{- if .Values.thanos.ruler.alertmanagersSendTimeout }}
+            - "--alertmanagers.send-timeout={{ .Values.thanos.ruler.alertmanagersSendTimeout }}"
             {{- end }}
-            {{- if .Values.thanos.rule.alertQueryUrl }}
-            - "--alert.query-url={{ .Values.thanos.rule.alertQueryUrl }}"
+            {{- if .Values.thanos.ruler.alertQueryUrl }}
+            - "--alert.query-url={{ .Values.thanos.ruler.alertQueryUrl }}"
             {{- end }}
-            {{- range .Values.thanos.rule.alertLabelDrop }}
+            {{- range .Values.thanos.ruler.alertLabelDrop }}
             - "--alert.label-drop={{ . }}"
             {{- end  }}
-            {{- if .Values.thanos.rule.extraArgs }}
-            {{- toYaml .Values.thanos.rule.extraArgs | nindent 12 }}
+            {{- if .Values.thanos.ruler.extraArgs }}
+            {{- toYaml .Values.thanos.ruler.extraArgs | nindent 12 }}
             {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.thanos.rule.http.port }}
+              containerPort: {{ .Values.thanos.ruler.service.http.port }}
             - name: grpc
-              containerPort: {{ .Values.thanos.rule.grpc.port }}
+              containerPort: {{ .Values.thanos.ruler.service.grpc.port }}
           volumeMounts:
             - name: prometheus-config
               mountPath: /etc/rules
@@ -158,9 +157,9 @@ spec:
               readOnly: true
             - name: thanos-data
               mountPath: /var/thanos/store
-            {{- if .Values.thanos.rule.certSecretName }}
+            {{- if .Values.thanos.ruler.certSecretName }}
             - mountPath: /etc/certs
-              name: {{ .Values.thanos.rule.certSecretName }}
+              name: {{ .Values.thanos.ruler.certSecretName }}
               readOnly: true
             {{- end }}
         {{- end }}

@@ -26,7 +26,7 @@ require (
 	github.com/go-openapi/validate v0.19.3
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/golang/protobuf v1.3.3
+	github.com/golang/protobuf v1.4.1
 	github.com/google/uuid v1.1.1
 	github.com/influxdata/tdigest v0.0.1
 	github.com/labstack/echo v3.3.10+incompatible
@@ -38,8 +38,9 @@ require (
 	github.com/thoas/go-funk v0.7.0
 	github.com/warthog618/sms v0.3.0
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
-	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013
 	google.golang.org/grpc v1.31.0
+	google.golang.org/protobuf v1.25.0
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	magma/orc8r/cloud/go v0.0.0
 	magma/orc8r/lib/go v0.0.0

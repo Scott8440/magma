@@ -27,6 +27,11 @@ prometheusGRPCPushAddress: "{{ .Release.Name }}-prometheus-cache:9092"
 #  - "http://{{ .Release.Name }}-prometheus-cache:9091/metrics"
 {{- end -}}
 
+{{- define "orchestrator-thanos-config-template" -}}
+useRemoteWriteExporter: true
+remoteWriteAddress: "{{ .Release.Name }}-thanos-receive-0:19291"
+{{- end -}}
+
 {{- define "metricsd-thanos-config-template" -}}
 profile: "prometheus"
 prometheusQueryAddress: "http://{{ .Release.Name }}-thanos-query-http:10902"

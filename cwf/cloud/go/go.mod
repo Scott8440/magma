@@ -27,7 +27,7 @@ require (
 	github.com/go-openapi/swag v0.19.5
 	github.com/go-openapi/validate v0.19.3
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/golang/protobuf v1.3.3
+	github.com/golang/protobuf v1.4.1
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.5.1
@@ -35,6 +35,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	google.golang.org/grpc v1.31.0
+	google.golang.org/protobuf v1.25.0
 	magma/feg/cloud/go v0.0.0
 	magma/feg/cloud/go/protos v0.0.0
 	magma/lte/cloud/go v0.0.0

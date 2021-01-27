@@ -14,6 +14,8 @@
 package main
 
 import (
+	"net/http"
+
 	"magma/orc8r/cloud/go/obsidian"
 	"magma/orc8r/cloud/go/orc8r"
 	"magma/orc8r/cloud/go/service"
@@ -60,8 +62,10 @@ func main() {
 	}
 
 	if serviceConfig.UseGRPCExporter {
-		grpcAddress := serviceConfig.PrometheusGRPCPushAddress
-		exporterServicer = servicers.NewGRPCPushExporterServicer(grpcAddress)
+		exporterServicer = servicers.NewGRPCPushExporterServicer(serviceConfig.PrometheusGRPCPushAddress)
+	} else if serviceConfig.UseRemoteWriteExporter {
+		glog.Error("Using remote write exporter")
+		exporterServicer = servicers.NewRemoteWriteExporterServicer(serviceConfig.RemoteWriteAddress, http.DefaultClient)
 	} else {
 		exporterServicer = servicers.NewPushExporterServicer(serviceConfig.PrometheusPushAddresses)
 	}

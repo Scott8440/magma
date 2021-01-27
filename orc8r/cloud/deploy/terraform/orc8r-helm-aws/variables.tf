@@ -155,6 +155,10 @@ variable "helm_deployment_name" {
   default     = "orc8r"
 }
 
+terraform {
+  experiments = [variable_validation]
+}
+
 variable "orc8r_deployment_type" {
   description = "Type of orc8r deployment (fixed wireless access, federated fixed wireless access, or all modules)"
   type        = string

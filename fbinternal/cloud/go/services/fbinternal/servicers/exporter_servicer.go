@@ -106,15 +106,15 @@ func (s *ExporterServicer) Submit(ctx context.Context, req *protos.SubmitMetrics
 
 	var metCtx exporters.MetricContext
 	switch c := req.GetContext().(type) {
-	case *protos.SubmitMetricsRequest_GatewayMetric:
+	case *protos.SubmitMetricsRequest_GatewayContext:
 		metCtx = &exporters.GatewayMetricContext{
-			NetworkID: c.GatewayMetric.NetworkId,
-			GatewayID: c.GatewayMetric.GatewayId,
+			NetworkID: c.GatewayContext.NetworkId,
+			GatewayID: c.GatewayContext.GatewayId,
 		}
-	case *protos.SubmitMetricsRequest_CloudMetric:
-		metCtx = &exporters.CloudMetricContext{CloudHost: c.CloudMetric.CloudHost}
-	case *protos.SubmitMetricsRequest_PushedMetric:
-		metCtx = &exporters.PushedMetricContext{NetworkID: c.PushedMetric.NetworkId}
+	case *protos.SubmitMetricsRequest_CloudContext:
+		metCtx = &exporters.CloudMetricContext{CloudHost: c.CloudContext.CloudHost}
+	case *protos.SubmitMetricsRequest_PushedContext:
+		metCtx = &exporters.PushedMetricContext{NetworkID: c.PushedContext.NetworkId}
 	}
 
 	var convertedSamples []exporters.Sample

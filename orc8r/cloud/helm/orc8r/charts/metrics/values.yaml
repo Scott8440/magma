@@ -22,16 +22,20 @@ thanos:
   enabled: false
 
   image:
-    repository: docker.io/thanosio/thanos
-    tag: v0.15.0
+    repository: bitnami/thanos
+    tag: 0.17.2-scratch-r1
     pullPolicy: IfNotPresent
 
   prometheusRetentionTime: 6h
+
+  storegateway:
+    enabled: true
 
   query:
     storeDNSDiscovery: true
     sidecarDNSDiscovery: true
     logLevel: debug
+    stores: ["orc8r-thanos-receive:10901"]
 
   # Use thanosRule.enabled for rule configurations since we are using a custom deployment
   # instead of the third-party helm chart. Use thanos.rule for all other configs
@@ -56,11 +60,15 @@ thanos:
   bucket:
     enabled: false
 
+  receive:
+    enabled: true
+    config: [{"endpoints": [ "127.0.0.1:10901"]}]
+
   sidecar:
     selector:
       app.kubernetes.io/component: prometheus
 
-  objstore:
+  objstoreConfig:
     type: S3
     config:
       bucket: ""
@@ -143,16 +151,16 @@ alertmanager:
   nodeSelector: {}
   tolerations: []
   # Pod affinity must be used to ensure that this pod runs on same node as prometheus
-  affinity:
-    podAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/component
-                operator: In
-                values:
-                  - prometheus
-          topologyKey: "kubernetes.io/hostname"
+  affinity: {}
+#    podAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        - labelSelector:
+#            matchExpressions:
+#              - key: app.kubernetes.io/component
+#                operator: In
+#                values:
+#                  - prometheus
+#          topologyKey: "kubernetes.io/hostname"
 
 prometheusConfigurer:
   # Enable/Disable chart
@@ -182,16 +190,16 @@ prometheusConfigurer:
   nodeSelector: {}
   tolerations: []
   # Pod affinity must be used to ensure that this pod runs on same node as prometheus
-  affinity:
-    podAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/component
-                operator: In
-                values:
-                  - prometheus
-          topologyKey: "kubernetes.io/hostname"
+  affinity: {}
+#    podAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        - labelSelector:
+#            matchExpressions:
+#              - key: app.kubernetes.io/component
+#                operator: In
+#                values:
+#                  - prometheus
+#          topologyKey: "kubernetes.io/hostname"
 
 alertmanagerConfigurer:
   # Enable/Disable chart
@@ -221,16 +229,16 @@ alertmanagerConfigurer:
   nodeSelector: {}
   tolerations: []
   # Pod affinity must be used to ensure that this pod runs on same node as prometheus
-  affinity:
-    podAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/component
-                operator: In
-                values:
-                  - prometheus
-          topologyKey: "kubernetes.io/hostname"
+  affinity: {}
+#    podAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        - labelSelector:
+#            matchExpressions:
+#              - key: app.kubernetes.io/component
+#                operator: In
+#                values:
+#                  - prometheus
+#          topologyKey: "kubernetes.io/hostname"
 
 prometheusCache:
   # Enable/Disable chart

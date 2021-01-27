@@ -19,5 +19,5 @@ metadata:
   name: thanos-objstore-config
 data:
   objstore.yaml: |
-{{ toYaml .Values.thanos.objstore | indent 4 }}
+{{ toYaml .Values.thanos.objstoreConfig | indent 4 }}
 {{- end }}

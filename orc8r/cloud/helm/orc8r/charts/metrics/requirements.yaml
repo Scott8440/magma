@@ -11,6 +11,6 @@
 
 dependencies:
   - name: thanos
-    version: 0.3.28
-    repository: "@banzaicloud-stable"
+    version: 3.6.0
+    repository: "@bitnami"
     condition: thanos.enabled

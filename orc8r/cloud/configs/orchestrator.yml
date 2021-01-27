@@ -10,7 +10,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-useGRPCExporter: true
+#useGRPCExporter: true
+useRemoteWriteExporter: true
+remoteWriteAddress: "thanos-receive:10902"
 prometheusGRPCPushAddress: "prometheus-cache:9092"
 
 analytics:
